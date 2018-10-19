@@ -10,13 +10,13 @@ import java.util.Arrays;
 public class Hashing<K> {
 	
 	//HashNode class
-	private class HashNode<K>{
-		K key;
+	private class HashNode<T>{
+		T key;
 		boolean isDeleted;
 		boolean isFree = true;
 		
 		//constructor of HashNode class
-		public HashNode(K key) {
+		public HashNode(T key) {
 			this.key = key;
 			this.isDeleted = false;
 			this.isFree = false;
@@ -26,10 +26,12 @@ public class Hashing<K> {
 	HashNode<K>[] table;
 	int size;
 	int capacity;
+	int loadFactor;
 	
 	public Hashing() {
 		capacity = 32;
 		size = 0;
+		loadFactor = 0;
 		table = new HashNode[capacity];
 		for(int i = 0; i < capacity; i++) {
 			table[i] = null;
@@ -65,7 +67,7 @@ public class Hashing<K> {
 			hashValue = indexFor(hash(x.hashCode()), this.capacity);
 			curNode = this.table[hashValue];
 			
-			if(curNode.key.equals(x) || curNode.isFree) {
+			if(curNode == null || curNode.key.equals(x) || curNode.isFree) {
 				return hashValue;
 			}
 			else if(curNode.isDeleted) {
@@ -89,7 +91,8 @@ public class Hashing<K> {
 	
 	public boolean contains(K x) {
 		int location = find(x);
-		if(this.table[location].key.equals(x))return true;
+		HashNode<K> node = this.table[location];
+		if(node != null && node.key.equals(x))return true;
 		return false;
 	}
 	
@@ -97,16 +100,34 @@ public class Hashing<K> {
 		int location = find(x);
 		if(this.table[location].key.equals(x)) {
 			HashNode<K> result = this.table[location];
-			this.table[location].isDeleted = true;return result.key;
+			this.table[location].isDeleted = true;
+			return result.key;
 		}
 		return null;
 	}
 	
 	public boolean RobinHoodAdd(K x) {
 		if(contains(x))return false;
-		int location = indexFor(hash(x.hashCode()), this.capacity);
-		
-		return false;
+		int location = find(x);
+		int disp = 0;
+		while(true) {
+			HashNode<K> node = this.table[location];
+			if(node == null || node.isFree || node.isDeleted) {
+				this.table[location] = new HashNode<K>(x);
+				return true;
+			}
+			else if(displacement(this.table[location].key, location) >= disp) {
+				disp+=1;
+				location = (location+1)%this.capacity;
+			}
+			else {
+				K temp = x;
+				x = this.table[location].key;
+				this.table[location].key = temp;
+				location = (location+1)%this.capacity;
+				disp = displacement(x, location);
+			}
+		}
 	}
 	
 	public boolean HopScotchAdd(K x) {
@@ -115,12 +136,15 @@ public class Hashing<K> {
 	
 	// Calculate displacement of x from its ideal location of h( x )
 	private int displacement(K x, int location) {
-		return 0;
+		int hashValue = indexFor(hash(x.hashCode()), this.capacity);
+		return (location >= hashValue) ? (location - hashValue) : (this.capacity + location - hashValue);
 	}
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
+		// driver methods
+		Hashing<Integer> table = new Hashing<Integer>();
+		System.out.println(table.RobinHoodAdd(1000));
+		System.out.println(table.contains(1001));
 	}
 	
 	public static<T> int distinctElements(T[ ] arr) {
