@@ -13,9 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
-public class Hashing < K extends Comparable < ? super K >> {
-	
-	private static final float threshold = 0.5f;
+public class Hashing<K> {
+
+    private static final float threshold = 0.5f;
     
 	//HashNode class
     private class HashNode < T > {
@@ -61,6 +61,18 @@ public class Hashing < K extends Comparable < ? super K >> {
     private int hashHelper(K x) {
         return indexFor(hash(x.hashCode()), this.capacity);
     }
+
+    //distinct elements in an array using robinhood hashing
+    public static <T> int distinctElements(T[] arr, int length) {
+        Hashing<T> table = new Hashing<T>();
+        int count = 0;
+        boolean isAdded;
+        for (int i = 0; i < length; i++) {
+            isAdded = table.RobinHoodAdd(arr[i]);
+            if (isAdded) count++;
+        }
+        return count;
+    }
     
     //find the position of entry in hash table.
     private int find(K x) {
@@ -69,7 +81,7 @@ public class Hashing < K extends Comparable < ? super K >> {
         while (true) {
             ik = (k + hashHelper(x)) % this.capacity;
             curNode = this.table[ik];
-            if (curNode == null || (curNode.key.compareTo(x) == 0)) {
+            if (curNode == null || curNode.key.equals(x)) {
                 return ik;
             } else if (curNode.isDeleted) {
                 break;
@@ -83,7 +95,7 @@ public class Hashing < K extends Comparable < ? super K >> {
             ik = (k + hashHelper(x)) % this.capacity;
             curNode = this.table[ik];
 
-            if (curNode != null && curNode.key.compareTo(x) == 0) {
+            if (curNode != null && curNode.key.equals(x)) {
                 return ik;
             }
             if (curNode == null) {
@@ -96,18 +108,7 @@ public class Hashing < K extends Comparable < ? super K >> {
     public boolean contains(K x) {
         int location = find(x);
         HashNode < K > node = this.table[location];
-        return (node != null) && (node.key.compareTo(x) == 0) && !node.isDeleted;
-    }
-    
-    //remove an entry from hash table and return it, if present else null.
-    public K remove(K x) {
-        int location = find(x);
-        if (this.table[location] != null && this.table[location].key.compareTo(x) == 0 && !this.table[location].isDeleted) {
-            this.table[location].isDeleted = true;
-            this.size--;
-            return this.table[location].key;
-        }
-        return null;
+        return (node != null) && (node.key.equals(x)) && !node.isDeleted;
     }
     
     //add into hashtable using robinhood hashing
@@ -263,17 +264,16 @@ public class Hashing < K extends Comparable < ? super K >> {
     	}
     	return set.size();
     }
-    
-    //distinct elements in an array using robinhood hashing
-    public static < T extends Comparable < ? super T >> int distinctElements(T[] arr, int length) {
-        Hashing < T > table = new Hashing < T > ();
-        int count = 0;
-        boolean isAdded;
-        for (int i = 0; i < length; i++) {
-            isAdded = table.RobinHoodAdd(arr[i]);
-            if (isAdded) count++;
+
+    //remove an entry from hash table and return it, if present else null.
+    public K remove(K x) {
+        int location = find(x);
+        if (this.table[location] != null && this.table[location].key.equals(x) && !this.table[location].isDeleted) {
+            this.table[location].isDeleted = true;
+            this.size--;
+            return this.table[location].key;
         }
-        return count;
+        return null;
     }
     
     //distinct elements in an array using Java's HashSet
