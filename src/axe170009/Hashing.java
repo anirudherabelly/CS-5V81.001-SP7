@@ -31,15 +31,18 @@ public class Hashing<K extends Comparable<? super K>> {
 
     public static void main(String[] args) {
         // driver methods
-        Hashing<Integer> table = new Hashing<>();
-        System.out.println(table.RobinHoodAdd(1000));
-        System.out.println(table.RobinHoodAdd(1001));
-        System.out.println(table.RobinHoodAdd(10));
-        System.out.println(table.RobinHoodAdd(160));
+        Hashing<Integer> tableArr = new Hashing<>();
+        System.out.println(tableArr.RobinHoodAdd(1000));
+        System.out.println(tableArr.RobinHoodAdd(1001));
+        System.out.println(tableArr.RobinHoodAdd(10));
+        System.out.println(tableArr.RobinHoodAdd(160));
 
-        System.out.println(table.contains(1001));
-        System.out.println(table.remove(1000));
-        System.out.println(table.size);
+        System.out.println(tableArr.contains(1001));
+        System.out.println(tableArr.remove(1000));
+        System.out.println(tableArr.contains(1000));
+        System.out.println(tableArr.size);
+
+
     }
 
     private static int indexFor(int h, int length) {
@@ -120,6 +123,7 @@ public class Hashing<K extends Comparable<? super K>> {
 		}
 	}
 
+
 	
 	// Calculate displacement of x from its ideal location of h( x )
 	private int displacement(K x, int location) {
@@ -138,6 +142,22 @@ public class Hashing<K extends Comparable<? super K>> {
             this.key = key;
             this.isDeleted = false;
             this.isFree = false;
+        }
+    }
+
+    private void rebuildAndRehash() {
+        HashNode[] temp = new HashNode[this.size];
+        this.size = 0;
+        int j = 0;
+        for (HashNode e : table) {
+            if (e != null && !e.isDeleted && !e.isFree && j < temp.length) {
+                temp[j++] = e;
+            }
+        }
+        this.capacity *= 2;
+        this.table = new HashNode[this.capacity];
+        for (int i = 0; i < temp.length; i++) {
+            RobinHoodAdd((K) temp[i].key);
         }
     }
 
