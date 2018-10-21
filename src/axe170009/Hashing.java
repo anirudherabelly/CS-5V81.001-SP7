@@ -213,6 +213,7 @@ public class Hashing < K extends Comparable < ? super K >> {
         timer.end();
         System.out.println("size of Java's hashset : "+ hashSetSize);
         System.out.println(timer.toString());
+        //end of operations compare
         
         //to compare performance of implemented hashing with hashset in finding distinct elements.
         timer.start();
@@ -226,8 +227,10 @@ public class Hashing < K extends Comparable < ? super K >> {
         timer.end();
         System.out.println("No. of distinct elements using hashset : "+distinctUsingHashSet);
         System.out.println(timer.toString());
+        //end of distinct elements compare
     }
     
+    //add, contains and remove operations on implemented hashing
     public static int OpsOnHashing(List<ArrayList<Integer>> pairs) {
     	Hashing<Integer> table = new Hashing<Integer>();
     	for(ArrayList<Integer> pair : pairs) {
@@ -244,6 +247,7 @@ public class Hashing < K extends Comparable < ? super K >> {
     	return table.size;
     }
     
+    //add, contains and remove operations on java's hashset
     public static int OpsOnHashSet(List<ArrayList<Integer>> pairs) {
     	HashSet<Integer> set = new HashSet<Integer>();
     	for(ArrayList<Integer> pair : pairs) {
