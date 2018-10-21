@@ -184,7 +184,7 @@ public class Hashing < K extends Comparable < ? super K >> {
         System.out.println(table.RobinHoodAdd(1001));
         System.out.println(table.RobinHoodAdd(10));
         System.out.println(table.RobinHoodAdd(160));
-        System.out.println(table.size);
+        System.out.println(table.size+"\n");
         
         
         Random random = new Random();
@@ -201,8 +201,8 @@ public class Hashing < K extends Comparable < ? super K >> {
         	pairs.add((ArrayList<Integer>) innerList);
         }
         Timer timer = new Timer();
-        /*to compare performance of implemented hashing with hashset for add, remove and contains on
-        same set of entries.*/
+        /*to compare performance of implemented hashing with hashset for 
+     	add, remove and contains on same set of entries.*/
         int hashingSize = OpsOnHashing(pairs);
         timer.end();
         System.out.println("size of implemented hashing : "+ hashingSize);
@@ -212,7 +212,7 @@ public class Hashing < K extends Comparable < ? super K >> {
         int hashSetSize =  OpsOnHashSet(pairs);
         timer.end();
         System.out.println("size of Java's hashset : "+ hashSetSize);
-        System.out.println(timer.toString());
+        System.out.println(timer.toString()+"\n");
         //end of operations compare
         
         //to compare performance of implemented hashing with hashset in finding distinct elements.
