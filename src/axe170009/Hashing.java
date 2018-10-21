@@ -39,9 +39,6 @@ public class Hashing<K> {
         capacity = 2048;
         size = 0;
         table = new HashNode[capacity];
-        /*for (int i = 0; i < capacity; i++) {
-            table[i] = null;
-        }*/
     }
 
     /*This function ensures that hashCodes that differ only by
@@ -172,19 +169,18 @@ public class Hashing<K> {
         Hashing < Integer > table = new Hashing < Integer > ();
         
         //Operations on implemented hashing and their outputs. 
-        System.out.println(table.RobinHoodAdd(1000));
-        System.out.println(table.RobinHoodAdd(1001));
-        System.out.println(table.contains(1002));
-        System.out.println(table.size);
-        System.out.println(table.remove(1000));
-        System.out.println(table.contains(1000));
-        System.out.println(table.remove(1000));
-        System.out.println(table.size);
-        System.out.println(table.RobinHoodAdd(1000));
-        System.out.println(table.RobinHoodAdd(1001));
-        System.out.println(table.RobinHoodAdd(10));
-        System.out.println(table.RobinHoodAdd(160));
-        System.out.println(table.size+"\n");
+        System.out.println("Before size : " + table.size);
+        System.out.println("add 1000 : " + table.RobinHoodAdd(1000));
+        System.out.println("add 1001 : " + table.RobinHoodAdd(1001));
+        System.out.println("contains 1002 : " + table.contains(1002));
+        System.out.println("remove 1000 : " + table.remove(1000));
+        System.out.println("contains 1000 : " + table.contains(1000));
+        System.out.println("remove 1000 : " + table.remove(1000));
+        System.out.println("add 1000 : " + table.RobinHoodAdd(1000));
+        System.out.println("add 1001 : " + table.RobinHoodAdd(1001));
+        System.out.println("add 10 : " + table.RobinHoodAdd(10));
+        System.out.println("add 160 : " + table.RobinHoodAdd(160));
+        System.out.println("after size : " + table.size+"\n");
         
         
         Random random = new Random();
@@ -200,6 +196,8 @@ public class Hashing<K> {
         	innerList.add(arr[i]);
         	pairs.add((ArrayList<Integer>) innerList);
         }
+        
+        System.out.println("Performance comparision for add, remove and contains ops.");
         Timer timer = new Timer();
         /*to compare performance of implemented hashing with hashset for 
      	add, remove and contains on same set of entries.*/
@@ -215,6 +213,7 @@ public class Hashing<K> {
         System.out.println(timer.toString()+"\n");
         //end of operations compare
         
+        System.out.println("Performance comparision on no. of distinct entries.");
         //to compare performance of implemented hashing with hashset in finding distinct elements.
         timer.start();
         int distinctUsingHashing = distinctElements(arr, length);
