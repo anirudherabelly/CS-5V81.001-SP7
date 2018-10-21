@@ -8,7 +8,9 @@
 
 package axe170009;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 
 public class Hashing < K extends Comparable < ? super K >> {
@@ -37,9 +39,9 @@ public class Hashing < K extends Comparable < ? super K >> {
         capacity = 2048;
         size = 0;
         table = new HashNode[capacity];
-        for (int i = 0; i < capacity; i++) {
+        /*for (int i = 0; i < capacity; i++) {
             table[i] = null;
-        }
+        }*/
     }
 
     /*This function ensures that hashCodes that differ only by
@@ -168,6 +170,8 @@ public class Hashing < K extends Comparable < ? super K >> {
     //main driver method
     public static void main(String[] args) {
         Hashing < Integer > table = new Hashing < Integer > ();
+        
+        //Operations on implemented hashing and their outputs. 
         System.out.println(table.RobinHoodAdd(1000));
         System.out.println(table.RobinHoodAdd(1001));
         System.out.println(table.contains(1002));
@@ -181,15 +185,37 @@ public class Hashing < K extends Comparable < ? super K >> {
         System.out.println(table.RobinHoodAdd(10));
         System.out.println(table.RobinHoodAdd(160));
         System.out.println(table.size);
-
-        //to compare performance of implemented hashing with hashset.
+        
+        
         Random random = new Random();
         int length = 1000000; //1 million entries.
+        List<ArrayList<Integer>> pairs = new ArrayList<ArrayList<Integer>>();
+        List<Integer> innerList;
+        
         Integer[] arr = new Integer[length];
         for (int i = 0; i < length; i++) {
-            arr[i] = random.nextInt(Integer.MAX_VALUE);
+        	arr[i] = random.nextInt(Integer.MAX_VALUE);
+        	innerList = new ArrayList<Integer>();
+        	innerList.add(random.nextInt(3));
+        	innerList.add(arr[i]);
+        	pairs.add((ArrayList<Integer>) innerList);
         }
         Timer timer = new Timer();
+        /*to compare performance of implemented hashing with hashset for add, remove and contains on
+        same set of entries.*/
+        int hashingSize = OpsOnHashing(pairs);
+        timer.end();
+        System.out.println("size of implemented hashing : "+ hashingSize);
+        System.out.println(timer.toString());
+        
+        timer.start();
+        int hashSetSize =  OpsOnHashSet(pairs);
+        timer.end();
+        System.out.println("size of Java's hashset : "+ hashSetSize);
+        System.out.println(timer.toString());
+        
+        //to compare performance of implemented hashing with hashset in finding distinct elements.
+        timer.start();
         int distinctUsingHashing = distinctElements(arr, length);
         timer.end();
         System.out.println("No. of distinct elements using implemented hashing : "+distinctUsingHashing);
@@ -200,11 +226,42 @@ public class Hashing < K extends Comparable < ? super K >> {
         timer.end();
         System.out.println("No. of distinct elements using hashset : "+distinctUsingHashSet);
         System.out.println(timer.toString());
-        
     }
     
-    //distinct elements in ana array using robinhood hashing
-    public static < T extends Comparable <? super T >> int distinctElements(T[] arr, int length) {
+    public static int OpsOnHashing(List<ArrayList<Integer>> pairs) {
+    	Hashing<Integer> table = new Hashing<Integer>();
+    	for(ArrayList<Integer> pair : pairs) {
+    		if(pair.get(0) == 0) {
+    			table.RobinHoodAdd(pair.get(1));
+    		}
+    		else if(pair.get(0) == 1) {
+    			table.contains(pair.get(1));
+    		}
+    		else {
+    			table.remove(pair.get(1));
+    		}
+    	}
+    	return table.size;
+    }
+    
+    public static int OpsOnHashSet(List<ArrayList<Integer>> pairs) {
+    	HashSet<Integer> set = new HashSet<Integer>();
+    	for(ArrayList<Integer> pair : pairs) {
+    		if(pair.get(0) == 0) {
+    			set.add(pair.get(1));
+    		}
+    		else if(pair.get(0) == 1) {
+    			set.contains(pair.get(1));
+    		}
+    		else {
+    			set.remove(pair.get(1));
+    		}
+    	}
+    	return set.size();
+    }
+    
+    //distinct elements in an array using robinhood hashing
+    public static < T extends Comparable < ? super T >> int distinctElements(T[] arr, int length) {
         Hashing < T > table = new Hashing < T > ();
         int count = 0;
         boolean isAdded;
@@ -215,7 +272,7 @@ public class Hashing < K extends Comparable < ? super K >> {
         return count;
     }
     
-  //distinct elements in ana array using Java's HashSet
+    //distinct elements in an array using Java's HashSet
     public static < T > int distinctElementsUsingHashSet(T[] arr, int length) {
         HashSet < T > set = new HashSet < T > ();
         int count = 0;
