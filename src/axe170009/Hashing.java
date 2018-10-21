@@ -5,7 +5,23 @@
  */
 package axe170009;
 
+import java.util.HashSet;
+import java.util.Random;
+
 public class Hashing<K extends Comparable<? super K>> {
+	
+	//HashNode class
+    private class HashNode<T> {
+        T key;
+        boolean isDeleted;
+
+        //constructor of HashNode class
+        public HashNode(T key) {
+            this.key = key;
+            this.isDeleted = false;
+        }
+    }
+    
     int size;
     int capacity;
     int loadFactor;
@@ -29,27 +45,11 @@ public class Hashing<K extends Comparable<? super K>> {
 		}
 	}
 
-    public static void main(String[] args) {
-        // driver methods
-        Hashing<Integer> tableArr = new Hashing<>();
-        System.out.println(tableArr.RobinHoodAdd(1000));
-        System.out.println(tableArr.RobinHoodAdd(1001));
-        System.out.println(tableArr.RobinHoodAdd(10));
-        System.out.println(tableArr.RobinHoodAdd(160));
-
-        System.out.println(tableArr.contains(1001));
-        System.out.println(tableArr.remove(1000));
-        System.out.println(tableArr.contains(1000));
-        System.out.println(tableArr.size);
-
-
-    }
-
     private static int indexFor(int h, int length) {
         return h & (length-1);
 	}
 
-    public int hashHelper(K x) {
+    private int hashHelper(K x) {
         return indexFor(hash(x.hashCode()), this.capacity);
     }
 
@@ -59,8 +59,8 @@ public class Hashing<K extends Comparable<? super K>> {
         while(true) {
             ik = (k + hashHelper(x)) % this.capacity;
             curNode = this.table[ik];
-
-            if (curNode == null || (curNode.key.compareTo(x) == 0) || curNode.isFree) {
+            
+            if (curNode == null || (curNode.key.compareTo(x) == 0)) {
                 return ik;
             } else if(curNode.isDeleted) {
 				break;
@@ -71,11 +71,14 @@ public class Hashing<K extends Comparable<? super K>> {
         }
         int xSpot = ik;
         while (true) {
-            k++;
-            if (curNode.key.compareTo(x) == 0) {
+        	k++;
+        	ik = (k + hashHelper(x)) % this.capacity;
+            curNode = this.table[ik];
+            
+        	if (curNode != null && curNode.key.compareTo(x) == 0) {
                 return ik;
             }
-            if(curNode.isFree) {
+            if(curNode == null) {
 				return xSpot;
 			}
 		}
@@ -84,12 +87,12 @@ public class Hashing<K extends Comparable<? super K>> {
 	public boolean contains(K x) {
 		int location = find(x);
 		HashNode<K> node = this.table[location];
-        return node != null && (node.key.compareTo(x) == 0);
+        return (node != null) && (node.key.compareTo(x) == 0) && !node.isDeleted;
     }
 
     public K remove(K x) {
         int location = find(x);
-        if (this.table[location].key.compareTo(x) == 0) {
+        if (this.table[location] != null && this.table[location].key.compareTo(x) == 0 && !this.table[location].isDeleted) {
             HashNode<K> result = this.table[location];
             this.table[location].isDeleted = true;
             this.size--;
@@ -104,7 +107,7 @@ public class Hashing<K extends Comparable<? super K>> {
 		int disp = 0;
 		while(true) {
 			HashNode<K> node = this.table[location];
-			if(node == null || node.isFree || node.isDeleted) {
+			if(node == null || node.isDeleted) {
 				this.table[location] = new HashNode<K>(x);
                 size++;
                 return true;
@@ -122,8 +125,6 @@ public class Hashing<K extends Comparable<? super K>> {
 			}
 		}
 	}
-
-
 	
 	// Calculate displacement of x from its ideal location of h( x )
 	private int displacement(K x, int location) {
@@ -131,26 +132,12 @@ public class Hashing<K extends Comparable<? super K>> {
         return (location >= hashValue) ? (location - hashValue) : (this.capacity + location - hashValue);
     }
 
-    //HashNode class
-    private class HashNode<T> {
-        T key;
-        boolean isDeleted;
-        boolean isFree = true;
-
-        //constructor of HashNode class
-        public HashNode(T key) {
-            this.key = key;
-            this.isDeleted = false;
-            this.isFree = false;
-        }
-    }
-
     private void rebuildAndRehash() {
         HashNode[] temp = new HashNode[this.size];
         this.size = 0;
         int j = 0;
         for (HashNode e : table) {
-            if (e != null && !e.isDeleted && !e.isFree && j < temp.length) {
+            if (e != null && !e.isDeleted && j < temp.length) {
                 temp[j++] = e;
             }
         }
@@ -160,9 +147,57 @@ public class Hashing<K extends Comparable<? super K>> {
             RobinHoodAdd((K) temp[i].key);
         }
     }
-
-    public static<T> int distinctElements(T[ ] arr) {
-		return 0;	
+	
+    public static void main(String[] args) {
+		// driver methods
+		Hashing<Integer> table = new Hashing<Integer>();
+		System.out.println(table.RobinHoodAdd(1000));
+		System.out.println(table.RobinHoodAdd(1001));
+		System.out.println(table.contains(1002));
+		System.out.println(table.size);
+		System.out.println(table.remove(1000));
+		System.out.println(table.contains(1000));
+		System.out.println(table.remove(1000));
+		System.out.println(table.size);
+        System.out.println(table.RobinHoodAdd(1000));
+        System.out.println(table.RobinHoodAdd(1001));
+        System.out.println(table.RobinHoodAdd(10));
+        System.out.println(table.RobinHoodAdd(160));
+        System.out.println(table.size);
+		
+		//to compare performance of implemented hashing with hashset.
+		Random random = new Random();
+		int length = 10;
+		Integer[] arr = new Integer[length];
+		for(int i = 0; i < length; i++) {
+			arr[i] = random.nextInt(Integer.MAX_VALUE);
+			System.out.println(arr[i]);
+		}
+		int distinctUsingHashing = distinctElements(arr, length);
+		int distinctUsingHashSet = distinctElementsUsingHashSet(arr, length);
+		System.out.println(distinctUsingHashing+ " "+distinctUsingHashSet);
+    }
+    
+	public static<T extends Comparable<? super T>> int distinctElements(T[ ] arr, int length) {
+		Hashing<T> table = new Hashing<T>();
+		int count = 0;
+		boolean isAdded;
+		for(int i = 0; i < length; i++) {
+			isAdded = table.RobinHoodAdd(arr[i]);
+			if(isAdded)count++;
+		}
+		return count;
+	}
+	
+	public static<T> int distinctElementsUsingHashSet(T[ ] arr, int length) {
+		HashSet<T> set = new HashSet<T>();
+		int count = 0;
+		boolean isAdded;
+		for(int i = 0; i < length; i++) {
+			isAdded = set.add(arr[i]);
+			if(isAdded)count++;
+		}
+		return count;
 	}
 
 }
