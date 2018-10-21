@@ -62,18 +62,6 @@ public class Hashing<K> {
         return indexFor(hash(x.hashCode()), this.capacity);
     }
 
-    //distinct elements in an array using robinhood hashing
-    public static <T> int distinctElements(T[] arr, int length) {
-        Hashing<T> table = new Hashing<T>();
-        int count = 0;
-        boolean isAdded;
-        for (int i = 0; i < length; i++) {
-            isAdded = table.RobinHoodAdd(arr[i]);
-            if (isAdded) count++;
-        }
-        return count;
-    }
-    
     //find the position of entry in hash table.
     private int find(K x) {
         int k = 0, ik = 0; //ik is hashValue
@@ -109,6 +97,17 @@ public class Hashing<K> {
         int location = find(x);
         HashNode < K > node = this.table[location];
         return (node != null) && (node.key.equals(x)) && !node.isDeleted;
+    }
+    
+    //remove an entry from hash table and return it, if present else null.
+    public K remove(K x) {
+        int location = find(x);
+        if (this.table[location] != null && this.table[location].key.equals(x) && !this.table[location].isDeleted) {
+            this.table[location].isDeleted = true;
+            this.size--;
+            return this.table[location].key;
+        }
+        return null;
     }
     
     //add into hashtable using robinhood hashing
@@ -232,13 +231,13 @@ public class Hashing<K> {
     }
     
     //add, contains and remove operations on implemented hashing
-    public static int OpsOnHashing(List<ArrayList<Integer>> pairs) {
-    	Hashing<Integer> table = new Hashing<Integer>();
-    	for(ArrayList<Integer> pair : pairs) {
-    		if(pair.get(0) == 0) {
+    public static< T > int OpsOnHashing(List<ArrayList<T>> pairs) {
+    	Hashing<T> table = new Hashing<T>();
+    	for(ArrayList<T> pair : pairs) {
+    		if(pair.get(0).equals(0)) {
     			table.RobinHoodAdd(pair.get(1));
     		}
-    		else if(pair.get(0) == 1) {
+    		else if(pair.get(0).equals(1)) {
     			table.contains(pair.get(1));
     		}
     		else {
@@ -249,13 +248,13 @@ public class Hashing<K> {
     }
     
     //add, contains and remove operations on java's hashset
-    public static int OpsOnHashSet(List<ArrayList<Integer>> pairs) {
-    	HashSet<Integer> set = new HashSet<Integer>();
-    	for(ArrayList<Integer> pair : pairs) {
-    		if(pair.get(0) == 0) {
+    public static< T > int OpsOnHashSet(List<ArrayList<T>> pairs) {
+    	HashSet< T > set = new HashSet< T >();
+    	for(ArrayList<T> pair : pairs) {
+    		if(pair.get(0).equals(0)) {
     			set.add(pair.get(1));
     		}
-    		else if(pair.get(0) == 1) {
+    		else if(pair.get(0).equals(1)) {
     			set.contains(pair.get(1));
     		}
     		else {
@@ -265,15 +264,16 @@ public class Hashing<K> {
     	return set.size();
     }
 
-    //remove an entry from hash table and return it, if present else null.
-    public K remove(K x) {
-        int location = find(x);
-        if (this.table[location] != null && this.table[location].key.equals(x) && !this.table[location].isDeleted) {
-            this.table[location].isDeleted = true;
-            this.size--;
-            return this.table[location].key;
+    //distinct elements in an array using robinhood hashing
+    public static <T> int distinctElements(T[] arr, int length) {
+        Hashing<T> table = new Hashing<T>();
+        int count = 0;
+        boolean isAdded;
+        for (int i = 0; i < length; i++) {
+            isAdded = table.RobinHoodAdd(arr[i]);
+            if (isAdded) count++;
         }
-        return null;
+        return count;
     }
     
     //distinct elements in an array using Java's HashSet
