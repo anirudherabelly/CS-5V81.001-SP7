@@ -5,10 +5,10 @@
  */
 package axe170009;
 
-public class Hashing<K extends Comparable<? super K>> {
+public class Hashing<K> {
     int size;
     int capacity;
-    int loadFactor;
+    float loadFactor = 0.5f;
     HashNode<K>[] table;
 
     /*This function ensures that hashCodes that differ only by
@@ -22,8 +22,8 @@ public class Hashing<K extends Comparable<? super K>> {
 	public Hashing() {
 		capacity = 32;
 		size = 0;
-		loadFactor = 0;
-		table = new HashNode[capacity];
+        loadFactor = 0.5f;
+        table = new HashNode[capacity];
 		for(int i = 0; i < capacity; i++) {
 			table[i] = null;
 		}
@@ -32,14 +32,17 @@ public class Hashing<K extends Comparable<? super K>> {
     public static void main(String[] args) {
         // driver methods
         Hashing<Integer> tableArr = new Hashing<>();
-        System.out.println(tableArr.RobinHoodAdd(1000));
-        System.out.println(tableArr.RobinHoodAdd(1001));
-        System.out.println(tableArr.RobinHoodAdd(10));
-        System.out.println(tableArr.RobinHoodAdd(160));
-
-        System.out.println(tableArr.contains(1001));
-        System.out.println(tableArr.remove(1000));
-        System.out.println(tableArr.contains(1000));
+        for (int i = 0; i < 40; i++) {
+            System.out.println(tableArr.RobinHoodAdd(i));
+        }
+//        System.out.println(tableArr.RobinHoodAdd(1000));
+//        System.out.println(tableArr.RobinHoodAdd(1001));
+//        System.out.println(tableArr.RobinHoodAdd(10));
+//        System.out.println(tableArr.RobinHoodAdd(160));
+//
+//        System.out.println(tableArr.contains(1001));
+//        System.out.println(tableArr.remove(1000));
+//        System.out.println(tableArr.contains(1000));
         System.out.println(tableArr.size);
 
 
@@ -60,7 +63,7 @@ public class Hashing<K extends Comparable<? super K>> {
             ik = (k + hashHelper(x)) % this.capacity;
             curNode = this.table[ik];
 
-            if (curNode == null || (curNode.key.compareTo(x) == 0) || curNode.isFree) {
+            if (curNode == null || curNode.key.equals(x) || curNode.isFree) {
                 return ik;
             } else if(curNode.isDeleted) {
 				break;
@@ -72,7 +75,7 @@ public class Hashing<K extends Comparable<? super K>> {
         int xSpot = ik;
         while (true) {
             k++;
-            if (curNode.key.compareTo(x) == 0) {
+            if (curNode.key.equals(x)) {
                 return ik;
             }
             if(curNode.isFree) {
@@ -84,12 +87,12 @@ public class Hashing<K extends Comparable<? super K>> {
 	public boolean contains(K x) {
 		int location = find(x);
 		HashNode<K> node = this.table[location];
-        return node != null && (node.key.compareTo(x) == 0);
+        return node != null && node.key.equals(x);
     }
 
     public K remove(K x) {
         int location = find(x);
-        if (this.table[location].key.compareTo(x) == 0) {
+        if (this.table[location].key.equals(x)) {
             HashNode<K> result = this.table[location];
             this.table[location].isDeleted = true;
             this.size--;
@@ -107,6 +110,10 @@ public class Hashing<K extends Comparable<? super K>> {
 			if(node == null || node.isFree || node.isDeleted) {
 				this.table[location] = new HashNode<K>(x);
                 size++;
+
+                if ((float) size / capacity > loadFactor) {
+                    rebuildAndRehash();
+                }
                 return true;
             }
 			else if(displacement(this.table[location].key, location) >= disp) {
@@ -149,7 +156,7 @@ public class Hashing<K extends Comparable<? super K>> {
         HashNode[] temp = new HashNode[this.size];
         this.size = 0;
         int j = 0;
-        for (HashNode e : table) {
+        for (HashNode e : this.table) {
             if (e != null && !e.isDeleted && !e.isFree && j < temp.length) {
                 temp[j++] = e;
             }
