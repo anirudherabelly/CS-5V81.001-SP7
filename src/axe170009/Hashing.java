@@ -21,10 +21,10 @@ public class Hashing<K extends Comparable<? super K>> {
             this.isDeleted = false;
         }
     }
-    
+
     int size;
     int capacity;
-    int loadFactor;
+    float loadFactor = 0.5f;
     HashNode<K>[] table;
 
     /*This function ensures that hashCodes that differ only by
@@ -38,8 +38,8 @@ public class Hashing<K extends Comparable<? super K>> {
 	public Hashing() {
 		capacity = 32;
 		size = 0;
-		loadFactor = 0;
-		table = new HashNode[capacity];
+        loadFactor = 0.5f;
+        table = new HashNode[capacity];
 		for(int i = 0; i < capacity; i++) {
 			table[i] = null;
 		}
@@ -59,7 +59,6 @@ public class Hashing<K extends Comparable<? super K>> {
         while(true) {
             ik = (k + hashHelper(x)) % this.capacity;
             curNode = this.table[ik];
-            
             if (curNode == null || (curNode.key.compareTo(x) == 0)) {
                 return ik;
             } else if(curNode.isDeleted) {
@@ -110,6 +109,10 @@ public class Hashing<K extends Comparable<? super K>> {
 			if(node == null || node.isDeleted) {
 				this.table[location] = new HashNode<K>(x);
                 size++;
+
+                if ((float) size / capacity > loadFactor) {
+                    rebuildAndRehash();
+                }
                 return true;
             }
 			else if(displacement(this.table[location].key, location) >= disp) {
