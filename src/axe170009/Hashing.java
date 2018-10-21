@@ -2,7 +2,10 @@
  * @author : 
  * Anirudh Erabelly
  * Ketki Mahajan
+ * 
+ * Java implementation of Robinhood hashing(Open Addressing technique). 
  */
+
 package axe170009;
 
 import java.util.HashSet;
@@ -30,7 +33,7 @@ public class Hashing < K extends Comparable < ? super K >> {
 
     @SuppressWarnings("unchecked")
 	public Hashing() {
-        capacity = 32;
+        capacity = 2048;
         size = 0;
         table = new HashNode[capacity];
         for (int i = 0; i < capacity; i++) {
@@ -173,14 +176,23 @@ public class Hashing < K extends Comparable < ? super K >> {
 
         //to compare performance of implemented hashing with hashset.
         Random random = new Random();
-        int length = 1000000;
+        int length = 1000000; //1 million entries.
         Integer[] arr = new Integer[length];
         for (int i = 0; i < length; i++) {
             arr[i] = random.nextInt(Integer.MAX_VALUE);
         }
+        Timer timer = new Timer();
         int distinctUsingHashing = distinctElements(arr, length);
+        timer.end();
+        System.out.println("No. of distinct elements using implemented hashing : "+distinctUsingHashing);
+        System.out.println(timer.toString());
+        
+        timer.start();
         int distinctUsingHashSet = distinctElementsUsingHashSet(arr, length);
-        System.out.println(distinctUsingHashing + " " + distinctUsingHashSet);
+        timer.end();
+        System.out.println("No. of distinct elements using hashset : "+distinctUsingHashSet);
+        System.out.println(timer.toString());
+        
     }
 
     public static < T extends Comparable <? super T >> int distinctElements(T[] arr, int length) {
